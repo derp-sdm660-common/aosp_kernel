@@ -5279,6 +5279,7 @@ void ipa3_dec_client_disable_clks_no_block(
  */
 void ipa3_inc_acquire_wakelock(void)
 {
+#if 0
 	unsigned long flags;
 
 	spin_lock_irqsave(&ipa3_ctx->wakelock_ref_cnt.spinlock, flags);
@@ -5286,6 +5287,7 @@ void ipa3_inc_acquire_wakelock(void)
 	IPADBG_LOW("active wakelock ref cnt = %d\n",
 		ipa3_ctx->wakelock_ref_cnt.cnt);
 	spin_unlock_irqrestore(&ipa3_ctx->wakelock_ref_cnt.spinlock, flags);
+#endif
 }
 
 /**
@@ -5298,6 +5300,7 @@ void ipa3_inc_acquire_wakelock(void)
  */
 void ipa3_dec_release_wakelock(void)
 {
+#if 0
 	unsigned long flags;
 
 	spin_lock_irqsave(&ipa3_ctx->wakelock_ref_cnt.spinlock, flags);
@@ -5305,6 +5308,7 @@ void ipa3_dec_release_wakelock(void)
 	IPADBG_LOW("active wakelock ref cnt = %d\n",
 		ipa3_ctx->wakelock_ref_cnt.cnt);
 	spin_unlock_irqrestore(&ipa3_ctx->wakelock_ref_cnt.spinlock, flags);
+#endif
 }
 #else
 void ipa3_inc_acquire_wakelock(void) {}
@@ -7035,7 +7039,10 @@ static int ipa3_pre_init(const struct ipa3_plat_drv_res *resource_p,
 		result = -ENOMEM;
 		goto fail_w_source_register;
 	}
+
+#if 0
 	spin_lock_init(&ipa3_ctx->wakelock_ref_cnt.spinlock);
+#endif
 
 	/* Initialize Power Management framework */
 	result = ipa_pm_init(&ipa3_res.pm_init);
