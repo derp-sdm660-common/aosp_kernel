@@ -1897,6 +1897,7 @@ struct afe_rtac_user_data_get_v3 {
 	/* The parameter data to be filled when sent inband */
 	struct param_hdr_v3 param_hdr;
 } __packed;
+
 #define AFE_PORT_CMD_SET_PARAM_V2	0x000100EF
 struct afe_port_cmd_set_param_v2 {
 	/* APR Header */
@@ -1905,17 +1906,16 @@ struct afe_port_cmd_set_param_v2 {
 	/* Port interface and direction (Rx or Tx) to start. */
 	u16 port_id;
 
-	/*
-	 * Actual size of the payload in bytes.
-	 * This is used for parsing the parameter payload.
-	 * Supported values: > 0
-	 */
 	u16 payload_size;
 
-	/* The header detailing the memory mapping for out of band. */
+    u32 payload_address_lsw;
+
+    u32 payload_address_msw;
+
+    u32 mem_map_handle;
+
 	struct mem_mapping_hdr mem_hdr;
 
-	/* The parameter data to be filled when sent inband */
 	u8 param_data[0];
 } __packed;
 
@@ -1950,6 +1950,30 @@ struct afe_port_cmd_set_param_v3 {
  * which gets/sets loopback gain of a port to an Rx port.
  * The Tx port ID of the loopback is part of the set_param command.
  */
+
+struct afe_port_param_data_v2 {
+	u32 module_id;
+/* ID of the module to be configured.
+ * Supported values: Valid module ID
+ */
+
+u32 param_id;
+/* ID of the parameter corresponding to the supported parameters
+ * for the module ID.
+ * Supported values: Valid parameter ID
+ */
+
+u16 param_size;
+/* Actual size of the data for the
+ * module_id/param_id pair. The size is a
+ * multiple of four bytes.
+ * Supported values: > 0
+ */
+
+u16 reserved;
+/* This field must be set to zero.
+ */
+} __packed;
 
 struct afe_loopback_gain_per_path_param {
 	u16                  rx_port_id;
@@ -4342,6 +4366,21 @@ struct afe_port_cmd_get_param_v2 {
 	 */
 	u16 payload_size;
 
+	u32 payload_address_lsw;
+    /* LSW of 64 bit Payload address. Address should be 32-byte,
+     * 4kbyte aligned and must be contig memory.
+     */
+
+	u32 payload_address_msw;
+    /* MSW of 64 bit Payload address. In case of 32-bit shared
+     * memory address, this field must be set to zero. In case of 36-bit
+     * shared memory address, bit-4 to bit-31 must be set to zero.
+     * Address should be 32-byte, 4kbyte aligned and must be contiguous
+     * memory.
+     */
+
+	u32 mem_map_handle;
+
 	/* The memory mapping header to be used when requesting outband */
 	struct mem_mapping_hdr mem_hdr;
 
@@ -4426,10 +4465,13 @@ struct afe_param_id_lpass_core_shared_clk_cfg {
  */
 } __packed;
 
-/* adsp_afe_service_commands.h */
+struct afe_lpass_core_shared_clk_config_command {
+        struct apr_hdr hdr;
+        struct afe_port_cmd_set_param_v2 param; /* adsp_afe_service_commands.h */
+        struct afe_param_id_lpass_core_shared_clk_cfg clk_cfg;
+} __packed;
 
-#define ADSP_MEMORY_MAP_EBI_POOL      0
-
+#define ADSP_MEMORY_MAP_EBI_POOL 0
 #define ADSP_MEMORY_MAP_SMI_POOL      1
 #define ADSP_MEMORY_MAP_IMEM_POOL      2
 #define ADSP_MEMORY_MAP_SHMEM8_4K_POOL      3
@@ -9904,7 +9946,8 @@ struct afe_sp_th_vi_ftm_params {
 
 struct afe_sp_th_vi_get_param {
 	struct param_hdr_v3 pdata;
-	struct afe_sp_th_vi_ftm_params param;
+        struct afe_port_cmd_get_param_v2 get_param;
+        struct afe_sp_th_vi_ftm_params param;
 } __packed;
 
 struct afe_sp_th_vi_get_param_resp {
