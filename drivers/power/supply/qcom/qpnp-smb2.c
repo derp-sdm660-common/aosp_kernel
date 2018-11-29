@@ -239,7 +239,7 @@ module_param_named(
 	try_sink_enabled, __try_sink_enabled, int, 0600
 );
 
-#define MICRO_1P5A		1500000
+#define MICRO_2P5A		1500000
 #define MICRO_P1A		100000
 #define OTG_DEFAULT_DEGLITCH_TIME_MS	50
 #define MIN_WD_BARK_TIME		16
