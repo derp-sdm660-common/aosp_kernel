@@ -289,7 +289,7 @@ static int smb2_parse_dt(struct smb2 *chip)
 	rc = of_property_read_u32(node,
 				"qcom,otg-cl-ua", &chg->otg_cl_ua);
 	if (rc < 0)
-		chg->otg_cl_ua = MICRO_1P5A;
+		chg->otg_cl_ua = MICRO_2P5A;
 
 	rc = of_property_read_u32(node,
 				"qcom,dc-icl-ua", &chip->dt.dc_icl_ua);

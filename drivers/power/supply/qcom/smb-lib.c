@@ -1495,7 +1495,7 @@ int smblib_vconn_regulator_is_enabled(struct regulator_dev *rdev)
 #define MAX_RETRY		15
 #define MIN_DELAY_US		2000
 #define MAX_DELAY_US		9000
-static int otg_current[] = {250000, 500000, 1000000, 1500000};
+static int otg_current[] = {250000, 500000, 1000000, 1500000, 2500000};
 static int smblib_enable_otg_wa(struct smb_charger *chg)
 {
 	u8 stat;
