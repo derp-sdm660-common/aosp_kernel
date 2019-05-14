@@ -685,9 +685,10 @@ static ssize_t tfa98xx_dbgfs_fw_state_get(struct file *file,
 	return simple_read_from_buffer(user_buf, count, ppos, str, strlen(str));
 }
 
-#ifdef CONFIG_SND_SOC_TFA9874
-extern int send_tfa_cal_apr(void *buf, int cmd_size, bool bRead);
-#endif
+/*#ifdef CONFIG_SND_SOC_TFA9874
+* extern int send_tfa_cal_apr(void *buf, int cmd_size, bool bRead);
+* #endif
+*/
 
 #ifdef CONFIG_SND_SOC_TFA9874
 static ssize_t tfa98xx_dbgfs_rpc_read(struct file *file,
@@ -707,9 +708,10 @@ static ssize_t tfa98xx_dbgfs_rpc_read(struct file *file,
 
 	mutex_lock(&tfa98xx->dsp_lock);
 
-	ret = send_tfa_cal_apr(buffer, count, true);
+        ret = copy_to_user(user_buf, buffer, count);
 
 	mutex_unlock(&tfa98xx->dsp_lock);
+
 	if (ret) {
 		pr_err("[0x%x] dsp_msg_read error: %d\n", i2c->addr, ret);
 		kfree(buffer);
@@ -791,13 +793,14 @@ static ssize_t tfa98xx_dbgfs_rpc_send(struct file *file,
 		return -EFAULT;
 
 	mutex_lock(&tfa98xx->dsp_lock);
-
+/*
 	err = send_tfa_cal_apr(buffer, count, false);
 	if (err) {
 		pr_err("[0x%x] dsp_msg error: %d\n", i2c->addr, err);
 	}
 
 	mdelay(2);
+*/
 
 	mutex_unlock(&tfa98xx->dsp_lock);
 

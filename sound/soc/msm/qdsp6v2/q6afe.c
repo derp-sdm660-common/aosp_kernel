@@ -6938,6 +6938,7 @@ done:
 EXPORT_SYMBOL(afe_release_all_dma_resources);
 /* Huaqin add for active nxp pa cal function by xudayi at 2018/03/03 start */
 #ifdef CONFIG_SND_SOC_TFA9874
+/*
 static int fill_afe_apr_hdr(struct apr_hdr *apr_hdr, uint32_t port,
 			 uint32_t opcode, uint32_t apr_msg_size)
 {
@@ -6975,7 +6976,6 @@ int send_tfa_cal_apr(void *buf, int cmd_size, bool bRead)
 	pr_debug("%s\n", __func__);
 
 	if (tfa_cal->map_data.ion_handle == NULL) {
-		/*Minimal chunk size is 4K*/
 		tfa_cal->map_data.map_size = SZ_4K;
 		result = msm_audio_ion_alloc("tfa_cal", &(tfa_cal->map_data.ion_client),
 				&(tfa_cal->map_data.ion_handle), tfa_cal->map_data.map_size,
@@ -7014,7 +7014,6 @@ int send_tfa_cal_apr(void *buf, int cmd_size, bool bRead)
 	pdata->module_id = 0x1000B911;
 	pdata->param_size = cmd_size;
 
-	/* Copy buffer to out-of-band payload */
 	memcpy((void *)(pdata + 1), buf, cmd_size);
 	memset(apr_msg, 0x00, sizeof(apr_msg));
 
@@ -7024,7 +7023,6 @@ int send_tfa_cal_apr(void *buf, int cmd_size, bool bRead)
 		pdata->param_id = 0x1000B921;
 		opcode = AFE_PORT_CMD_SET_PARAM_V2;
 
-		/* Copy AFE APR Message */
 		afe_set_apr_msg = (struct afe_port_cmd_set_param_v2 *)
 			((u8 *)apr_msg + sizeof(struct apr_hdr));
 
@@ -7045,7 +7043,6 @@ int send_tfa_cal_apr(void *buf, int cmd_size, bool bRead)
 		pdata->param_id = 0x1000B922;
 		opcode = AFE_PORT_CMD_GET_PARAM_V2;
 
-		/* Copy buffer to in-band payload */
 		afe_get_apr_msg = (struct afe_port_cmd_get_param_v2 *)
 			((u8 *) apr_msg + sizeof(struct apr_hdr));
 
@@ -7118,6 +7115,7 @@ int send_tfa_cal_apr(void *buf, int cmd_size, bool bRead)
 err:
 	return result;
 }
+*/
 
 int send_tfa_cal_in_band(void *buf, int cmd_size)
 {
