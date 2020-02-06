@@ -600,6 +600,24 @@ static struct ctl_table kern_table[] = {
 		.extra1		= &neg_three,
 		.extra2		= &three,
 	},
+        {
+		.procname	= "sched_group_upmigrate",
+                .data		= &sysctl_sched_boost,
+		.maxlen		= sizeof(unsigned int),
+		.mode		= 0644,
+		.proc_handler	= sched_boost_handler,
+		.extra1		= &neg_three,
+		.extra2		= &three,
+	},
+	{
+		.procname	= "sched_group_downmigrate",
+                .data		= &sysctl_sched_boost,
+		.maxlen		= sizeof(unsigned int),
+		.mode		= 0644,
+		.proc_handler	= sched_boost_handler,
+		.extra1		= &neg_three,
+		.extra2		= &three,
+	},
 	{
 		.procname	= "sched_min_task_util_for_boost",
 		.data		= &sysctl_sched_min_task_util_for_boost,
@@ -880,6 +898,7 @@ static struct ctl_table kern_table[] = {
 		.proc_handler	= proc_dointvec,
 	},
 #endif
+
 #ifdef CONFIG_PROC_SYSCTL
 	{
 		.procname	= "tainted",
