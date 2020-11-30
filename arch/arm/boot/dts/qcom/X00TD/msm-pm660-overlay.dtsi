@@ -95,5 +95,5 @@
 };
 
 &pm660_haptics {
-	qcom,actuator-type = "erm";
+	qcom,actuator-type = <1>;
 };
