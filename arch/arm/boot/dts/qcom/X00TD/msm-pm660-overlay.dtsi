@@ -84,4 +84,6 @@
 
 &pm660_haptics {
 	qcom,actuator-type = <1>;
+        qcom,vmax-mv = <3000>;
+        qcom,wave-play-rate-us = <7128>;
 };
