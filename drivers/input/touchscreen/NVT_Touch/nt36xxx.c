@@ -1120,7 +1120,8 @@ static irqreturn_t nvt_ts_work_func(int irq, void *data)
 	int32_t i = 0;
 	int32_t finger_cnt = 0;
 
-        pm_qos_update_request(&ts->pm_qos_req, 100);
+        pm_qos_update_request(&ts->pm_touch_req, 100);
+	pm_qos_update_request(&ts->pm_spi_req, 100);
 
 #if WAKEUP_GESTURE
 	if (bTouchIsAwake == 0) {
@@ -1252,7 +1253,8 @@ static irqreturn_t nvt_ts_work_func(int irq, void *data)
 	input_sync(ts->input_dev);
 
 XFER_ERROR:
-        pm_qos_update_request(&ts->pm_qos_req, PM_QOS_DEFAULT_VALUE);
+        pm_qos_update_request(&ts->pm_spi_req, PM_QOS_DEFAULT_VALUE);
+	pm_qos_update_request(&ts->pm_touch_req, PM_QOS_DEFAULT_VALUE);
 
 	mutex_unlock(&ts->lock);
 
@@ -1558,8 +1560,14 @@ static int32_t nvt_ts_probe(struct i2c_client *client, const struct i2c_device_i
 			nvt_irq_enable(false);
 			NVT_LOG("request irq %d succeed\n", client->irq);
 		}
+                ts->pm_spi_req.type = PM_QOS_REQ_AFFINE_IRQ;
+		ts->pm_spi_req.irq = geni_spi_get_master_irq(client);
+		pm_qos_add_request(&ts->pm_spi_req, PM_QOS_CPU_DMA_LATENCY,
+			PM_QOS_DEFAULT_VALUE);
 
-                pm_qos_add_request(&ts->pm_qos_req, PM_QOS_CPU_DMA_LATENCY,
+		ts->pm_touch_req.type = PM_QOS_REQ_AFFINE_IRQ;
+		ts->pm_touch_req.irq = client->irq;
+		pm_qos_add_request(&ts->pm_touch_req, PM_QOS_CPU_DMA_LATENCY,
 				PM_QOS_DEFAULT_VALUE);
 	}
 
@@ -1666,7 +1674,8 @@ err_register_fb_notif_failed:
 err_register_early_suspend_failed:
 #endif
 
-     pm_qos_remove_request(&ts->pm_qos_req);
+     pm_qos_remove_request(&ts->pm_touch_req);
+     pm_qos_remove_request(&ts->pm_spi_req);
 
 #if NVT_TOUCH_MP
 nvt_mp_proc_deinit();

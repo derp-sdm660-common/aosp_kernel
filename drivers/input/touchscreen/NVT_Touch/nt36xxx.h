@@ -22,7 +22,8 @@
 #include <linux/delay.h>
 #include <linux/i2c.h>
 #include <linux/input.h>
-#include <linux/pm_qos.h>
+#include <linux/spi/spi-geni-qcom.h>
+#include <linux/spi/spi-geni-qcom.h>
 #include <linux/uaccess.h>
 #include <linux/regulator/consumer.h>
 
@@ -135,7 +136,8 @@ struct nvt_ts_data {
 	uint8_t xbuf[1025];
 	struct mutex xbuf_lock;
 	bool irq_enabled;
-        struct pm_qos_request pm_qos_req;
+        struct pm_qos_request pm_spi_req;
+	struct pm_qos_request pm_touch_req;
 #if NVT_POWER_SOURCE_CUST_EN
 	struct regulator *lcm_lab;
 	struct regulator *lcm_ibb;
