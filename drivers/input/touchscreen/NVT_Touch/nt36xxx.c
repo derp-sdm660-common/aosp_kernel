@@ -426,8 +426,8 @@ static uint8_t bTouchIsAwake = 0;
 
 #if WAKEUP_GESTURE
 long gesture_mode = 0;
-static int allow_gesture = 1;
-static int screen_gesture = 0;
+static int allow_gesture = 0;
+static int screen_gesture = 1;
 static struct kobject *gesture_kobject;
 
 static ssize_t gesture_show(struct kobject *kobj, struct kobj_attribute *attr,
@@ -1085,19 +1085,19 @@ void nvt_ts_wakeup_gesture_report(uint8_t gesture_id)
 
 	switch (gesture_id) {
 		case ID_GESTURE_WORD_C:
-			if (screen_gesture) {
+			if (allow_gesture) {
 				NVT_LOG("Gesture : Word-C.\n");
 				keycode = gesture_key_array[0];
 			}
 			break;
 		case ID_GESTURE_WORD_W:
-			if (screen_gesture) {
+			if (allow_gesture) {
 				NVT_LOG("Gesture : Word-W.\n");
 				keycode = gesture_key_array[1];
 			}
 			break;
 		case ID_GESTURE_WORD_V:
-			if (screen_gesture) {
+			if (allow_gesture) {
 				NVT_LOG("Gesture : Word-V.\n");
 				keycode = gesture_key_array[2];
 			}
@@ -1110,55 +1110,55 @@ void nvt_ts_wakeup_gesture_report(uint8_t gesture_id)
 			}
 			break;
 		case ID_GESTURE_WORD_Z:
-			if (screen_gesture) {
+			if (allow_gesture) {
 				NVT_LOG("Gesture : Word-Z.\n");
 				keycode = gesture_key_array[4];
 			}
 			break;
 		case GESTURE_WORD_M:
-			if(screen_gesture) {
+			if(allow_gesture) {
 			NVT_LOG("Gesture : Word-M.\n");
 			keycode = gesture_key_array[5];
 			}
 			break;
 		case GESTURE_WORD_O:
-			if(screen_gesture) {
+			if(allow_gesture) {
 			NVT_LOG("Gesture : Word-O.\n");
 			keycode = gesture_key_array[6];
 			}
 			break;
 		case ID_GESTURE_WORD_e:
-			if (screen_gesture) {
+			if (allow_gesture) {
 				NVT_LOG("Gesture : Word-e.\n");
 				keycode = gesture_key_array[7];
 			}
 			break;
 		case ID_GESTURE_WORD_S:
-			if (screen_gesture) {
+			if (allow_gesture) {
 				NVT_LOG("Gesture : Word-S.\n");
 				keycode = gesture_key_array[8];
 			}
 			break;
 		case ID_GESTURE_SLIDE_UP:
-			if (screen_gesture) {
+			if (allow_gesture) {
 				NVT_LOG("Gesture : Slide UP.\n");
 				keycode = gesture_key_array[9];
 			}
 			break;
 		 case GESTURE_SLIDE_DOWN:
-			if(screen_gesture) {
+			if(allow_gesture) {
 			NVT_LOG("Gesture : Slide DOWN.\n");
 			keycode = gesture_key_array[10];
 			}
 			break;
 		case GESTURE_SLIDE_LEFT:
-			if(screen_gesture) {
+			if(allow_gesture) {
 			NVT_LOG("Gesture : Slide LEFT.\n");
 			keycode = gesture_key_array[11];
 			}
 			break;
 		case GESTURE_SLIDE_RIGHT:
-			if(screen_gesture) {
+			if(allow_gesture) {
 			NVT_LOG("Gesture : Slide RIGHT.\n");
 			keycode = gesture_key_array[12];
 			}
