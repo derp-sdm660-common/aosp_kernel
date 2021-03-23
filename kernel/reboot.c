@@ -563,8 +563,15 @@ static int __init reboot_setup(char *str)
 					return rc;
 			} else
 				*mode = REBOOT_SOFT;
+			if (rc >= num_possible_cpus()) {
+				pr_err("Ignoring the CPU number in reboot= option. "
+				       "CPU %d exceeds possible cpu number %d\n",
+				       rc, num_possible_cpus());
+				rc = 0;
+				break;
+			}
 			break;
-		}
+
 		case 'g':
 			*mode = REBOOT_GPIO;
 			break;
