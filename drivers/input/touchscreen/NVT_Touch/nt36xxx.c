@@ -234,34 +234,14 @@ const uint16_t gesture_key_array[] = {
 	GESTURE_EVENT_SWIPE_RIGHT,
 };
 
-// Use for DT2W
-static int allow_dclick = 1;
-// Use for gesture actions
+// Used for all gestures
 static int allow_gesture = 0;
 
 static struct wakeup_source *gestrue_wakelock;
 
-#define DT2W_NODE dclicknode
 #define GESTURE_NODE gesture_node
 
 static struct kobject *tp_kobject;
-
-// DT2W node
-static ssize_t dclick_show(struct kobject *kobj, struct kobj_attribute *attr,
-                      char *buf)
-{
-        return sprintf(buf, "%d\n", allow_dclick);
-}
-
-static ssize_t dclick_store(struct kobject *kobj, struct kobj_attribute *attr,
-                      const char *buf, size_t count)
-{
-        sscanf(buf, "%du", &allow_dclick);
-        return count;
-}
-
-static struct kobj_attribute dclick_attribute = __ATTR(DT2W_NODE, 0664, dclick_show,
-                                                   dclick_store);
 
 // gesture node
 static ssize_t gesture_show(struct kobject *kobj, struct kobj_attribute *attr,
@@ -290,10 +270,6 @@ void create_tp_nodes(void) {
         	NVT_LOG("[Nvt-ts] : Failed to create tp node \n");
 
         NVT_LOG("[Nvt-ts] : Gesture Node initialized successfully \n");
-
-        create_dt2w_node = sysfs_create_file(tp_kobject, &dclick_attribute.attr);
-        if (create_dt2w_node)
-                NVT_LOG("[Nvt-ts] : failed to create the dclicknode file in /sys/kernel/touchpanel \n");
 
         create_gesture_node = sysfs_create_file(tp_kobject, &gesture_attribute.attr);
         if (create_gesture_node)
@@ -884,70 +860,66 @@ void nvt_ts_wakeup_gesture_report(uint8_t gesture_id)
 
 	NVT_DBG("gesture_id = %d\n", gesture_id);
 
+	// Return if gestures are disabled
+	if(!allow_gesture)
+	    return;
 
-	if (allow_gesture) {
-		switch (gesture_id) {
-			case GESTURE_WORD_C:
-				NVT_DBG("Gesture : Word-C.\n");
-				keycode = gesture_key_array[0];
-				break;
-			case GESTURE_WORD_W:
-				NVT_DBG("Gesture : Word-W.\n");
-				keycode = gesture_key_array[1];
-				break;
-			case GESTURE_WORD_V:
-				NVT_DBG("Gesture : Word-V.\n");
-				keycode = gesture_key_array[2];
-				break;
-			case GESTURE_DOUBLE_CLICK:
-				if (allow_dclick) {
-					NVT_DBG("Gesture : Double Click.\n");
-					keycode = gesture_key_array[3];
-				}
-				break;
-			case GESTURE_WORD_Z:
-				NVT_DBG("Gesture : Word-Z.\n");
-				keycode = gesture_key_array[4];
-				break;
-			case GESTURE_WORD_M:
-				NVT_DBG("Gesture : Word-M.\n");
-				keycode = gesture_key_array[5];
-				break;
-			case GESTURE_WORD_O:
-				NVT_DBG("Gesture : Word-O.\n");
-				keycode = gesture_key_array[6];
-				break;
-			case GESTURE_WORD_e:
-				NVT_DBG("Gesture : Word-e.\n");
-				keycode = gesture_key_array[7];
-				break;
-			case GESTURE_WORD_S:
-				NVT_DBG("Gesture : Word-S.\n");
-				keycode = gesture_key_array[8];
-				break;
-			case GESTURE_SLIDE_UP:
-				NVT_DBG("Gesture : Slide UP.\n");
-				keycode = gesture_key_array[9];
-				break;
-			case GESTURE_SLIDE_DOWN:
-				NVT_DBG("Gesture : Slide DOWN.\n");
-				keycode = gesture_key_array[10];
-				break;
-			case GESTURE_SLIDE_LEFT:
-				NVT_DBG("Gesture : Slide LEFT.\n");
-				keycode = gesture_key_array[11];
-				break;
-			case GESTURE_SLIDE_RIGHT:
-				NVT_DBG("Gesture : Slide RIGHT.\n");
-				keycode = gesture_key_array[12];
-				break;
-			default:
-				break;
-		}
-	} else if(allow_dclick && gesture_id == GESTURE_DOUBLE_CLICK) {
-		  NVT_DBG("Gesture : Double Click.\n");
-		  keycode = gesture_key_array[3];		
-	  }
+	switch (gesture_id) {
+		case GESTURE_WORD_C:
+			NVT_DBG("Gesture : Word-C.\n");
+			keycode = gesture_key_array[0];
+			break;
+		case GESTURE_WORD_W:
+			NVT_DBG("Gesture : Word-W.\n");
+			keycode = gesture_key_array[1];
+			break;
+		case GESTURE_WORD_V:
+			NVT_DBG("Gesture : Word-V.\n");
+			keycode = gesture_key_array[2];
+			break;
+		case GESTURE_DOUBLE_CLICK:
+			NVT_DBG("Gesture : Double Click.\n");
+			keycode = gesture_key_array[3];
+			break;
+		case GESTURE_WORD_Z:
+			NVT_DBG("Gesture : Word-Z.\n");
+			keycode = gesture_key_array[4];
+			break;
+		case GESTURE_WORD_M:
+			NVT_DBG("Gesture : Word-M.\n");
+			keycode = gesture_key_array[5];
+			break;
+		case GESTURE_WORD_O:
+			NVT_DBG("Gesture : Word-O.\n");
+			keycode = gesture_key_array[6];
+			break;
+		case GESTURE_WORD_e:
+			NVT_DBG("Gesture : Word-e.\n");
+			keycode = gesture_key_array[7];
+			break;
+		case GESTURE_WORD_S:
+			NVT_DBG("Gesture : Word-S.\n");
+			keycode = gesture_key_array[8];
+			break;
+		case GESTURE_SLIDE_UP:
+		NVT_DBG("Gesture : Slide UP.\n");
+			keycode = gesture_key_array[9];
+			break;
+		case GESTURE_SLIDE_DOWN:
+			NVT_DBG("Gesture : Slide DOWN.\n");
+			keycode = gesture_key_array[10];
+			break;
+		case GESTURE_SLIDE_LEFT:
+			NVT_DBG("Gesture : Slide LEFT.\n");
+			keycode = gesture_key_array[11];
+			break;
+		case GESTURE_SLIDE_RIGHT:
+			NVT_DBG("Gesture : Slide RIGHT.\n");
+			keycode = gesture_key_array[12];
+			break;
+		default:
+			break;
+	}
 
 	if (keycode > 0) {
 		input_report_key(ts->input_dev, keycode, 1);
@@ -1883,7 +1855,7 @@ static int32_t nvt_ts_suspend(struct device *dev)
 	bTouchIsAwake = 0;
 
 #if WAKEUP_GESTURE
-	if (!allow_dclick && !allow_gesture) {
+	if (!allow_gesture) {
 		nvt_irq_enable(false);
 		//---write i2c command to enter "deep sleep mode"---
 		buf[0] = EVENT_MAP_HOST_CMD;
